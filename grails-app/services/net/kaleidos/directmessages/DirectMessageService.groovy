@@ -37,7 +37,7 @@ class DirectMessageService {
     * @param filterIds List of ids of users of with do not wat to get the messages
     * @return a list of Messages
     */
-    def getLastMessages(long id, int offset = 0, int itemsByPage = -1, List<Long> filterIds = []){
+    List<Message> getLastMessages(long id, int offset = 0, int itemsByPage = -1, List<Long> filterIds = []){
         def list = Message.createCriteria().list{
             or{
                 eq('fromId', id)
@@ -66,12 +66,15 @@ class DirectMessageService {
 
     /**
     * Get a list of the messages between two users. It is a list that mix sended and received messages, order by date
+    * Admit pagination
     * @param id1 Id of one of the users
     * @param id2 Id of the other of the users
     * @param onlyLast Return only the last message
+    * @param offset For pagination, first
+    * @param itemsByPage For pagination, maximun number of messages to return. If it is -1, returns all messages.
     * @return a list of Messages
     */
-    def getMessages(long id1, long id2, boolean onlyLast=false){
+    List<Message> getMessages(long id1, long id2, boolean onlyLast=false, int offset = 0, int itemsByPage = -1){
         def list = Message.createCriteria().list{
             or{
                 and {
@@ -87,35 +90,41 @@ class DirectMessageService {
             if (onlyLast){
                 eq('last', true)
             }
+            
+            if (itemsByPage > -1) {
+				maxResults(itemsByPage)
+			}
+            firstResult(offset)
+            
+            
             order('dateCreated', 'asc')
         }
         return list
     }
-
-
+    
+    
     /**
-    * Count the number of unread messages between two users, mixing sended and received messages
-    * @param fromId Id of the user that send the message
-    * @param toId Id of the user that receives the message
+    * Get a list of the messages between the same users that a given message. It is a list that mix sended and received messages, order by date
+    * @param messageId Id of the message
     * @return a list of Messages
     */
-    def countUnreadMessagesBetweenUsers(long fromId, long toId){
-        def num = Message.createCriteria().count{
-            eq('readed', false)
-            eq('fromId', fromId)
-            eq('toId', toId)
+    List<Message> getMessages(long messageId){
+        Message m = Message.get(messageId)
+
+        if (m){
+            return getMessages(m.fromId, m.toId)
         }
-        return num
     }
 
 
     /**
-    * Get a list of the messages between two users. It is a list that mix sended and received messages, order by date
+    * Get a list of the messages from an user to another, order by date
+    * Admit pagination
     * @param fromId Id of the user that send the message
     * @param toId Id of the user that receives the message
     * @return a list of Messages
     */
-    def getMessagesBetweenUsers(long fromId, long toId, int offset = 0, int itemsByPage = -1){
+    List<Message> getMessagesBetweenUsers(long fromId, long toId, int offset = 0, int itemsByPage = -1){
         def list = Message.createCriteria().list{
             eq('fromId', fromId)
             eq('toId', toId)
@@ -129,21 +138,6 @@ class DirectMessageService {
         }
         return list
     }
-
-
-    /**
-    * Get a list of the messages between the same users that a given message. It is a list that mix sended and received messages, order by date
-    * @param messageId Id of the message
-    * @return a list of Messages
-    */
-    def getMessages(long messageId){
-        Message m = Message.get(messageId)
-
-        if (m){
-            return getMessages(m.fromId, m.toId)
-        }
-    }
-
 
     /**
     * Count the number of messages that the user has received, and hasn't read
@@ -169,6 +163,22 @@ class DirectMessageService {
             }
         }
 
+        return num
+    }
+    
+    
+    /**
+    * Count the number of unread messages between two users, mixing sended and received messages
+    * @param fromId Id of the user that send the message
+    * @param toId Id of the user that receives the message
+    * @return long
+    */
+    long countUnreadMessagesBetweenUsers(long fromId, long toId){
+        def num = Message.createCriteria().count{
+            eq('readed', false)
+            eq('fromId', fromId)
+            eq('toId', toId)
+        }
         return num
     }
 

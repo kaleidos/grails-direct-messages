@@ -25,15 +25,15 @@ class DirectMessageServiceTests {
 
 
     void testGetMessages() {
-        assertNotNull (directMessageService.sendMessage(1,2,'Test 1')) //The messages ar ordered by date desc, so this is the Third message
-        assertNotNull (directMessageService.sendMessage(1,3,'Test 2')) //The messages ar ordered by date desc, so this is the Second message
-        assertNotNull (directMessageService.sendMessage(2,1,'Test 3')) //The messages ar ordered by date desc, so this is the First message
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 1')) //The messages are ordered by date desc, so this is the Third message
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 2')) //The messages are ordered by date desc, so this is the Second message
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 3')) //The messages are ordered by date desc, so this is the First message
         
         def lastMessages
         def lastMessage
 
         //Get last messages for user 1. There must be 2 messages, because we only get the last message for every user
-        //The messages ar ordered by date desc
+        //The messages are ordered by date desc
         lastMessages = directMessageService.getLastMessages(1)
         assertEquals(lastMessages.size(), 2)
 
@@ -52,7 +52,7 @@ class DirectMessageServiceTests {
         
         
         //Get last messages for user 2. There must be 1 messages, because we only get the last message for every user
-        //The messages ar ordered by date desc
+        //The messages are ordered by date desc
         lastMessages = directMessageService.getLastMessages(2)
         assertEquals(lastMessages.size(), 1)
 
@@ -65,7 +65,7 @@ class DirectMessageServiceTests {
         
         
         //Get last messages for user 3. There must be 1 messages
-        //The messages ar ordered by date desc
+        //The messages are ordered by date desc
         lastMessages = directMessageService.getLastMessages(3)
         assertEquals(lastMessages.size(), 1)
 
@@ -75,6 +75,39 @@ class DirectMessageServiceTests {
         assertEquals(lastMessage.fromId, 1)
         //Get all messages of this conversation. Should be 1
         assertEquals(directMessageService.getMessages(lastMessage.id).size(), 1)
+        
+        
+    }
+    
+    void testGetMessagesPagination() {
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 1'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 2'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 3'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 4'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 5'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 6'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 7'))
+        
+        def messages
+
+        //Get messages for users 1 and 2, without pagination
+        //The messages are ordered by date asc
+        messages = directMessageService.getMessages(1, 2, false)
+        assertEquals(messages.size(), 7)
+        
+        //Get first page messages for users 1 and 2
+        //The messages are ordered by date asc
+        messages = directMessageService.getMessages(1, 2, false, 0, 5)
+        assertEquals(messages.size(), 5)
+        assertEquals(messages.text, ['Test 1', 'Test 2', 'Test 3', 'Test 4', 'Test 5'])
+        
+        //Get first page messages for users 1 and 2
+        //The messages are ordered by date asc
+        messages = directMessageService.getMessages(1, 2, false, 5, 5)
+        assertEquals(messages.size(), 2)
+        assertEquals(messages.text, ['Test 6', 'Test 7'])
+        
+        
         
         
     }
@@ -89,7 +122,7 @@ class DirectMessageServiceTests {
         def lastMessage
 
         //Get last messages for user 1, filtering messages with user 3. There must be 2 messages
-        //The messages ar ordered by date desc
+        //The messages are ordered by date desc
         lastMessages = directMessageService.getLastMessages(1, 0, -1, [3])
         assertEquals(lastMessages.size(), 2)
 
@@ -104,7 +137,7 @@ class DirectMessageServiceTests {
         
         
         //Get last messages for user 1, filtering messages with user 2 and 3. There must be 1 messages
-        //The messages ar ordered by date desc
+        //The messages are ordered by date desc
         lastMessages = directMessageService.getLastMessages(1, 0, -1, [2, 3])
         assertEquals(lastMessages.size(), 1)
 
