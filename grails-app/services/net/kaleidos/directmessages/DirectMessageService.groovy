@@ -122,6 +122,8 @@ class DirectMessageService {
     * Admit pagination
     * @param fromId Id of the user that send the message
     * @param toId Id of the user that receives the message
+    * @param offset For pagination, first
+    * @param itemsByPage For pagination, maximun number of messages to return. If it is -1, returns all messages.
     * @return a list of Messages
     */
     List<Message> getMessagesBetweenUsers(long fromId, long toId, int offset = 0, int itemsByPage = -1){
