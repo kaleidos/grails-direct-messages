@@ -5,12 +5,12 @@ package net.kaleidos.directmessages
  * Uses ids of the user instead of objects, in order to independice the plugin from the project user system
  * @author Pablo Alba <pablo.alba@kaleidos.net>
  */
- 
 class Message {
 	/**
 	 * Id of the user that generates the message
 	 */
 	Long fromId
+
 	/**
 	 * Id of the user that receives the message
 	 */
@@ -24,21 +24,17 @@ class Message {
 	/**
 	 * Is this the last message between those users?
 	 */
-	boolean last
-	
+	Boolean last
+
 	/**
 	 * The message has been readed
 	 */
-	boolean readed = false 
-
+	Boolean readed = false
 
 	Date dateCreated
 
-	static constraints = {
-	}
-
 	static mapping = {
 		table "directmessages_message"
-        text type:"text"
+		text type:"text"
 	}
 }
