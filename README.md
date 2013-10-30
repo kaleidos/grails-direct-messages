@@ -26,7 +26,18 @@ All the functionality of the plugin should be accessed by the service called dir
 
     def directMessageService // instanciate the service
 
-    directMessageService.getLastMessages(user1.id) //usage example
+    //get conversations for an user (i.e. the last message with every other user)
+    def messages = directMessageService.getLastMessages(user1.id)
+    
+    //get all messages between two users
+    def messagesWithUser = directMessageService.getMessages(user1.id, user2.id)
+    
+    //send a message to an user
+    directMessageService.sendMessage(user1.id, user2.id, "Message text here")
+    
+## Example
+    There is an example project for the use of the plugin here:
+    https://github.com/kaleidos/grails-direct-messages-sample
 
 ### Available service methods
 
