@@ -36,8 +36,9 @@ All the functionality of the plugin should be accessed by the service called dir
     directMessageService.sendMessage(user1.id, user2.id, "Message text here")
     
 ## Example
-    There is an example project for the use of the plugin here:
-    https://github.com/kaleidos/grails-direct-messages-sample
+    
+There is an example project for the use of the plugin here:
+https://github.com/kaleidos/grails-direct-messages-sample
 
 ### Available service methods
 
