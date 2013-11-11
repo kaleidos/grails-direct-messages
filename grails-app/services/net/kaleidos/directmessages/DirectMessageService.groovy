@@ -210,22 +210,15 @@ class DirectMessageService {
      * @param itemsByPage Number of messages to return (for pagination). -1 will return all messages.
      * @param sort Field to order by. Can be one of 'user
      * @param order 'asc' or 'desc' for ascendig or descending order.
-     * @return a list of Messages
+     * @return a map with: messages (the list of Messages), totalNum (the total num of messages, for the pagination), unreadedNum (the number of unreaded messages)
      */
-    List<Message> getReceivedMessagesBySubject(long id, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
-        def resultMessages = []
-
-        def messages = Message.findAllByToId(id)
-
-        while (messages) {
-            def message = messages[0]
-            def subjectGroup = messages.findAll{it.fromId == message.fromId && it.subject == message.subject}.sort{it.dateCreated}
-            resultMessages << subjectGroup.last()
-            messages = messages - subjectGroup
-        }
-
-        return messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
-
+    Map getReceivedMessagesBySubject(long id, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
+        def result = [:]
+        def resultMessages = getMessagesBySubject (id, true)
+        result.totalNum = resultMessages.size()
+        result.unreadedNum = resultMessages.count{ it.readed == false }
+        result.messages = messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
+        return result
     }
 
     /**
@@ -235,27 +228,51 @@ class DirectMessageService {
      * @param itemsByPage Number of messages to return (for pagination). -1 will return all messages.
      * @param sort Field to order by. Can be one of 'user
      * @param order 'asc' or 'desc' for ascendig or descending order.
+     * @return a map with: messages (the list of Messages), totalNum (the total num of messages, for the pagination)
+     */
+    Map getSentMessagesBySubject(long id, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
+        def result = [:]
+        def resultMessages = getMessagesBySubject (id, false)
+        result.totalNum = resultMessages.size()
+        result.messages = messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
+        return result
+    }
+
+
+    /**
+     * This method is intended to be used only privately
+     * Get a list of the messages sent or received by the user, grouping by subject, that is, 'last' messages of every subject.
+     * @param id Id of the user
+     * @param offset Number of messages to skip (for pagination)
+     * @param itemsByPage Number of messages to return (for pagination). -1 will return all messages.
+     * @param sort Field to order by. Can be one of 'user
+     * @param order 'asc' or 'desc' for ascendig or descending order.
      * @return a list of Messages
      */
-    List<Message> getSentMessagesBySubject(long id, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
+    List<Message> getMessagesBySubject(long id, boolean received){
         def resultMessages = []
 
-        def messages = Message.findAllByFromId(id)
+        def messages = received?Message.findAllByToId(id):Message.findAllByFromId(id)
 
         while (messages) {
             def message = messages[0]
-            def subjectGroup = messages.findAll{it.toId == message.toId && it.subject == message.subject}.sort{it.dateCreated}
+            def subjectGroup
+            if (received) {
+                subjectGroup = messages.findAll{it.fromId == message.fromId && it.subject == message.subject}.sort{it.dateCreated}
+            } else {
+                subjectGroup = messages.findAll{it.toId == message.toId && it.subject == message.subject}.sort{it.dateCreated}
+            }
             resultMessages << subjectGroup.last()
             messages = messages - subjectGroup
         }
 
-        return messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
+        return resultMessages
 
     }
 
 
     /**
-     * This methos is intended to be used only privately
+     * This method is intended to be used only privately
      * Sorts and paginates in memory a list of messages
      * @param messages the list of messages to sort and paginate
      * @param offset Number of messages to skip (for pagination)
