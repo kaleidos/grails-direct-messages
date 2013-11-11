@@ -224,33 +224,76 @@ class DirectMessageService {
             messages = messages - subjectGroup
         }
 
+        return messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
+
+    }
+
+    /**
+     * Get a list of the messages sent by the user, grouping by subject, that is, 'last' messages of every subject.
+     * @param id Id of the user
+     * @param offset Number of messages to skip (for pagination)
+     * @param itemsByPage Number of messages to return (for pagination). -1 will return all messages.
+     * @param sort Field to order by. Can be one of 'user
+     * @param order 'asc' or 'desc' for ascendig or descending order.
+     * @return a list of Messages
+     */
+    List<Message> getSentMessagesBySubject(long id, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
+        def resultMessages = []
+
+        def messages = Message.findAllByFromId(id)
+
+        while (messages) {
+            def message = messages[0]
+            def subjectGroup = messages.findAll{it.toId == message.toId && it.subject == message.subject}.sort{it.dateCreated}
+            resultMessages << subjectGroup.last()
+            messages = messages - subjectGroup
+        }
+
+        return messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
+
+    }
+
+
+    /**
+     * This methos is intended to be used only privately
+     * Sorts and paginates in memory a list of messages
+     * @param messages the list of messages to sort and paginate
+     * @param offset Number of messages to skip (for pagination)
+     * @param itemsByPage Number of messages to return (for pagination). -1 will return all messages.
+     * @param sort Field to order by. Can be one of 'user
+     * @param order 'asc' or 'desc' for ascendig or descending order.
+     * @return a list of Messages
+     **/
+    List<Message> messagesSortAndPagination(List<Message> messages, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
 
         //Sort
         if (sort == 'fromId') {
-            resultMessages = resultMessages.sort{it.fromId}
+            messages = messages.sort{it.fromId}
+        } else if (sort == 'toId') {
+            messages = messages.sort{it.toId}
         } else if (sort == 'subject') {
-            resultMessages = resultMessages.sort{it.subject}
+            messages = messages.sort{it.subject}
         } else {
-            resultMessages = resultMessages.sort{it.dateCreated}
+            messages = messages.sort{it.dateCreated}
         }
 
 
         if (order == 'des') {
-            resultMessages = resultMessages.reverse()
+            messages = messages.reverse()
         }
 
         //Pagination
         if (itemsByPage != -1) {
-            if (offset < resultMessages.size()) {
-                def max = Math.min(offset+itemsByPage, resultMessages.size()) - 1
+            if (offset < messages.size()) {
+                def max = Math.min(offset+itemsByPage, messages.size()) - 1
 
-                resultMessages = resultMessages[offset..max]
+                messages = messages[offset..max]
             } else {
-                resultMessages = []
+                messages = []
             }
         }
 
-        return resultMessages
+        return messages
 
     }
 }
