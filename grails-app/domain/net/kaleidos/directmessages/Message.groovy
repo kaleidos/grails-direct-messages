@@ -39,12 +39,14 @@ class Message {
     /**
      * This message is a reply. Useful for "mail" type messages
      */
-    Boolean reply
+    Boolean reply = false
 
     /**
      * Is this the last message between those users on this subject?. Useful for "mail" type messages
      */
-    Boolean lastOnSubject
+    Boolean lastOnSubject = false
+
+
 
     /**
      * Date when the message was created
