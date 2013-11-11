@@ -13,14 +13,33 @@ class DirectMessageService {
      * @param text The text of the message
      * @return a Message
      */
-    Message sendMessage(long fromId, long toId, String text) {
+    Message sendMessage(long fromId, long toId, String text, String subject=null) {
         def messages = getMessages(fromId, toId, true)
-        Message m = new Message(fromId:fromId, toId: toId, text: text.trim(), last:true)
+        def messagesOnSubject = null
+
+        def reply = false
+        def s = subject?.trim()
+
+        if (s) {
+            //Find messages between those users with same subject
+            messagesOnSubject = messages.findAll{it.subject == s}
+            if (messagesOnSubject) {
+                reply = true
+            }
+        }
+
+        Message m = new Message(fromId:fromId, toId: toId, text: text.trim(), last:true, lastOnSubject:true, subject:s, reply:reply)
+
         if (m.save()){
             //If save is ok, the old last message isn't last anymore
             if (messages){
                 messages[0].last = false
                 messages[0].save()
+            }
+
+            if (messagesOnSubject) {
+                messagesOnSubject[0].lastOnSubject = false
+                messagesOnSubject[0].save()
             }
         }
         return m
@@ -181,5 +200,57 @@ class DirectMessageService {
                 it.save()
             }
         }
+    }
+
+
+    /**
+     * Get a list of the messages received by the user, grouping by subject, that is, 'last' messages of every subject.
+     * @param id Id of the user
+     * @param offset Number of messages to skip (for pagination)
+     * @param itemsByPage Number of messages to return (for pagination). -1 will return all messages.
+     * @param sort Field to order by. Can be one of 'user
+     * @param order 'asc' or 'desc' for ascendig or descending order.
+     * @return a list of Messages
+     */
+    List<Message> getReceivedMessagesBySubject(long id, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
+        def resultMessages = []
+
+        def messages = Message.findAllByToId(id)
+
+        while (messages) {
+            def message = messages[0]
+            def subjectGroup = messages.findAll{it.fromId == message.fromId && it.subject == message.subject}.sort{it.dateCreated}
+            resultMessages << subjectGroup.last()
+            messages = messages - subjectGroup
+        }
+
+
+        //Sort
+        if (sort == 'fromId') {
+            resultMessages = resultMessages.sort{it.fromId}
+        } else if (sort == 'subject') {
+            resultMessages = resultMessages.sort{it.subject}
+        } else {
+            resultMessages = resultMessages.sort{it.dateCreated}
+        }
+
+
+        if (order == 'des') {
+            resultMessages = resultMessages.reverse()
+        }
+
+        //Pagination
+        if (itemsByPage != -1) {
+            if (offset < resultMessages.size()) {
+                def max = Math.min(offset+itemsByPage, resultMessages.size()) - 1
+
+                resultMessages = resultMessages[offset..max]
+            } else {
+                resultMessages = []
+            }
+        }
+
+        return resultMessages
+
     }
 }

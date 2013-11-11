@@ -13,6 +13,31 @@ class DirectMessageServiceTests {
         assertNotNull (directMessageService.sendMessage(1,2,'Test'))
     }
 
+
+    void testSendMessageWithSubject() {
+        assertNotNull (directMessageService.sendMessage(1,2,'Test', 'The subject'))
+        def message = Message.findByFromId(1)
+        assert  message.subject == 'The subject'
+        assert  message.reply == false
+    }
+
+    void testSendMessageWithSubjectAndReply() {
+        assertNotNull (directMessageService.sendMessage(1,2,'Test', 'The subject'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test', 'The subject'))
+
+        def message = Message.findByFromId(1)
+        assert  message.subject == 'The subject'
+        assert  message.reply == false
+        assert  message.lastOnSubject == false
+
+
+        message = Message.findByFromId(2)
+        assert  message.subject == 'The subject'
+        assert  message.reply == true
+        assert  message.lastOnSubject == true
+
+    }
+
     void testGetLastMessages() {
         assertNotNull (directMessageService.sendMessage(1,2,'Test 1'))
         assertNotNull (directMessageService.sendMessage(1,3,'Test 2'))
@@ -71,6 +96,7 @@ class DirectMessageServiceTests {
         //Get all messages of this conversation. Should be 1
         assertEquals(directMessageService.getMessages(lastMessage.id).size(), 1)
     }
+
 
     void testGetMessagesPagination() {
         assertNotNull (directMessageService.sendMessage(1,2,'Test 1'))
@@ -270,4 +296,278 @@ class DirectMessageServiceTests {
         //Call again markAsRead and does not fail
         directMessageService.markAsRead(messages)
     }
+
+
+
+    void testGetReceivedMessagesBySubject() {
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 1', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 2', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 3', 'Subject 1'))
+
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 16', 'Subject 5'))
+
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 4', 'Subject 2'))
+
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 7', 'Subject 3'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 8', 'Subject 3'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 9', 'Subject 3'))
+
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 10', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 11', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 12', 'Subject 1'))
+
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 13', 'Subject 2'))
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 14', 'Subject 2'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 15', 'Subject 2'))
+
+
+        def messages = directMessageService.getReceivedMessagesBySubject(1)
+
+        assert messages.size() == 5
+
+        assert messages[0].subject == 'Subject 1'
+        assert messages[0].text == 'Test 3'
+        assert messages[0].fromId == 2
+        assert messages[0].toId == 1
+        assert messages[0].reply == true
+
+        assert messages[1].subject == 'Subject 2'
+        assert messages[1].text == 'Test 4'
+        assert messages[1].fromId == 2
+        assert messages[1].toId == 1
+        assert messages[1].reply == false
+
+        assert messages[2].subject == 'Subject 3'
+        assert messages[2].text == 'Test 9'
+        assert messages[2].fromId == 2
+        assert messages[2].toId == 1
+        assert messages[2].reply == true
+
+        assert messages[3].subject == 'Subject 1'
+        assert messages[3].text == 'Test 11'
+        assert messages[3].fromId == 3
+        assert messages[3].toId == 1
+        assert messages[3].reply == true
+
+        assert messages[4].subject == 'Subject 2'
+        assert messages[4].text == 'Test 15'
+        assert messages[4].fromId == 3
+        assert messages[4].toId == 1
+        assert messages[4].reply == true
+
+    }
+
+    void testGetReceivedMessagesBySubjectOrder() {
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 1', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 2', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 3', 'Subject 1'))
+
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 16', 'Subject 5'))
+
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 4', 'Subject 2'))
+
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 7', 'Subject 3'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 8', 'Subject 3'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 9', 'Subject 3'))
+
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 10', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 11', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 12', 'Subject 1'))
+
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 13', 'Subject 2'))
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 14', 'Subject 2'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 15', 'Subject 2'))
+
+
+        def messages = directMessageService.getReceivedMessagesBySubject(1, 0, -1, 'dateCreated', 'des')
+
+        assert messages.size() == 5
+
+        assert messages[4].subject == 'Subject 1'
+        assert messages[4].text == 'Test 3'
+        assert messages[4].fromId == 2
+        assert messages[4].toId == 1
+        assert messages[4].reply == true
+
+        assert messages[3].subject == 'Subject 2'
+        assert messages[3].text == 'Test 4'
+        assert messages[3].fromId == 2
+        assert messages[3].toId == 1
+        assert messages[3].reply == false
+
+        assert messages[2].subject == 'Subject 3'
+        assert messages[2].text == 'Test 9'
+        assert messages[2].fromId == 2
+        assert messages[2].toId == 1
+        assert messages[2].reply == true
+
+        assert messages[1].subject == 'Subject 1'
+        assert messages[1].text == 'Test 11'
+        assert messages[1].fromId == 3
+        assert messages[1].toId == 1
+        assert messages[1].reply == true
+
+        assert messages[0].subject == 'Subject 2'
+        assert messages[0].text == 'Test 15'
+        assert messages[0].fromId == 3
+        assert messages[0].toId == 1
+        assert messages[0].reply == true
+
+    }
+
+    void testGetReceivedMessagesBySubjectSort() {
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 1', 'CCC'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 2', 'CCC'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 3', 'CCC'))
+
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 16', 'AAA'))
+
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 4', 'DDD'))
+
+        assertNotNull (directMessageService.sendMessage(1,2,'Test 7', 'BBB'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 8', 'BBB'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 9', 'BBB'))
+
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 10', 'EEE'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 11', 'EEE'))
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 12', 'EEE'))
+
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 13', 'FFF'))
+        assertNotNull (directMessageService.sendMessage(1,3,'Test 14', 'FFF'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 15', 'FFF'))
+
+
+        def messages = directMessageService.getReceivedMessagesBySubject(1, 0, -1, 'subject', 'asc')
+
+        assert messages.size() == 5
+
+
+        assert messages[0].subject == 'BBB'
+        assert messages[0].text == 'Test 9'
+        assert messages[0].fromId == 2
+        assert messages[0].toId == 1
+        assert messages[0].reply == true
+
+        assert messages[1].subject == 'CCC'
+        assert messages[1].text == 'Test 3'
+        assert messages[1].fromId == 2
+        assert messages[1].toId == 1
+        assert messages[1].reply == true
+
+        assert messages[2].subject == 'DDD'
+        assert messages[2].text == 'Test 4'
+        assert messages[2].fromId == 2
+        assert messages[2].toId == 1
+        assert messages[2].reply == false
+
+        assert messages[3].subject == 'EEE'
+        assert messages[3].text == 'Test 11'
+        assert messages[3].fromId == 3
+        assert messages[3].toId == 1
+        assert messages[3].reply == true
+
+        assert messages[4].subject == 'FFF'
+        assert messages[4].text == 'Test 15'
+        assert messages[4].fromId == 3
+        assert messages[4].toId == 1
+        assert messages[4].reply == true
+
+    }
+
+    void testGetReceivedMessagesBySubjectPagination() {
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 1', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 2', 'Subject 2'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 3', 'Subject 3'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 4', 'Subject 4'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 5', 'Subject 5'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 6', 'Subject 6'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 7', 'Subject 7'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 8', 'Subject 8'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 9', 'Subject 9'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 10', 'Subject 10'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 11', 'Subject 11'))
+
+
+
+        def messages = directMessageService.getReceivedMessagesBySubject(1, 6, 3)
+
+        assert messages.size() == 3
+
+        assert messages[0].subject == 'Subject 7'
+        assert messages[1].subject == 'Subject 8'
+        assert messages[2].subject == 'Subject 9'
+
+    }
+
+    void testGetReceivedMessagesBySubjectPaginationFirstPage() {
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 1', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 2', 'Subject 2'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 3', 'Subject 3'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 4', 'Subject 4'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 5', 'Subject 5'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 6', 'Subject 6'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 7', 'Subject 7'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 8', 'Subject 8'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 9', 'Subject 9'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 10', 'Subject 10'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 11', 'Subject 11'))
+
+
+
+        def messages = directMessageService.getReceivedMessagesBySubject(1, 0, 3)
+
+        assert messages.size() == 3
+
+        assert messages[0].subject == 'Subject 1'
+        assert messages[1].subject == 'Subject 2'
+        assert messages[2].subject == 'Subject 3'
+
+    }
+
+    void testGetReceivedMessagesBySubjectPaginationLastPage() {
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 1', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 2', 'Subject 2'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 3', 'Subject 3'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 4', 'Subject 4'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 5', 'Subject 5'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 6', 'Subject 6'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 7', 'Subject 7'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 8', 'Subject 8'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 9', 'Subject 9'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 10', 'Subject 10'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 11', 'Subject 11'))
+
+
+
+        def messages = directMessageService.getReceivedMessagesBySubject(1, 9, 3)
+
+        assert messages.size() == 2
+
+        assert messages[0].subject == 'Subject 10'
+        assert messages[1].subject == 'Subject 11'
+
+    }
+
+    void testGetReceivedMessagesBySubjectPaginationOutOfRange() {
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 1', 'Subject 1'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 2', 'Subject 2'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 3', 'Subject 3'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 4', 'Subject 4'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 5', 'Subject 5'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 6', 'Subject 6'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 7', 'Subject 7'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 8', 'Subject 8'))
+        assertNotNull (directMessageService.sendMessage(2,1,'Test 9', 'Subject 9'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 10', 'Subject 10'))
+        assertNotNull (directMessageService.sendMessage(3,1,'Test 11', 'Subject 11'))
+
+
+
+        def messages = directMessageService.getReceivedMessagesBySubject(1, 15, 3)
+
+        assert messages.size() == 0
+
+
+    }
+
 }

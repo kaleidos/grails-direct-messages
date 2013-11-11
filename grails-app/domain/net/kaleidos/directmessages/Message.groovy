@@ -6,35 +6,58 @@ package net.kaleidos.directmessages
  * @author Pablo Alba <pablo.alba@kaleidos.net>
  */
 class Message {
-	/**
-	 * Id of the user that generates the message
-	 */
-	Long fromId
+    /**
+     * Id of the user that generates the message
+     */
+    Long fromId
 
-	/**
-	 * Id of the user that receives the message
-	 */
-	Long toId
+    /**
+     * Id of the user that receives the message
+     */
+    Long toId
 
-	/**
-	 * Message text
-	 */
-	String text
+    /**
+     * Message text
+     */
+    String text
 
-	/**
-	 * Is this the last message between those users?
-	 */
-	Boolean last
+    /**
+     * Is this the last message between those users?
+     */
+    Boolean last
 
-	/**
-	 * The message has been readed
-	 */
-	Boolean readed = false
+    /**
+     * The message has been readed
+     */
+    Boolean readed = false
 
-	Date dateCreated
+    /**
+     * Subject of the message. Optional, only for "mail" type messages
+     */
+    String subject
 
-	static mapping = {
-		table "directmessages_message"
-		text type:"text"
-	}
+    /**
+     * This message is a reply. Useful for "mail" type messages
+     */
+    Boolean reply
+
+    /**
+     * Is this the last message between those users on this subject?. Useful for "mail" type messages
+     */
+    Boolean lastOnSubject
+
+    /**
+     * Date when the message was created
+     */
+    Date dateCreated
+
+    static constraints = {
+        subject nullable: true, blank: true
+    }
+
+    static mapping = {
+        table "directmessages_message"
+        text type:"text"
+        subject type:"text", index: 'directmessages_message_subject_idx'
+    }
 }
