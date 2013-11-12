@@ -48,7 +48,6 @@ class DirectMessageService {
 
             return m
         }
-        println "--->${m.errors}"
         return null
     }
 
