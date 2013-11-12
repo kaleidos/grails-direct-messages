@@ -27,6 +27,7 @@ class DirectMessageService {
             messagesOnSubject = findAllMessagesOnSubject(m)
             if (messagesOnSubject) {
                 m.reply = true
+                m.numberOfMessagesOnSubject = messagesOnSubject.size() +1
             }
         }
 
@@ -38,14 +39,13 @@ class DirectMessageService {
                 messages[0].save()
             }
 
-            if (messagesOnSubject) {
-                messagesOnSubject[0].lastOnSubject = false
-                messagesOnSubject[0].save()
-                messagesOnSubject.each{
-                     it.numberOfMessagesOnSubject = messagesOnSubject.size() +1
-                     it.save()
-                 }
-            }
+
+            messagesOnSubject.each{
+                 it.numberOfMessagesOnSubject = messagesOnSubject.size() +1
+                 it.lastOnSubject = false
+                 it.save()
+             }
+
             return m
         }
         println "--->${m.errors}"

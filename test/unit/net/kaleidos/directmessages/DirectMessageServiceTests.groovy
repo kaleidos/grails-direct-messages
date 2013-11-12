@@ -23,15 +23,24 @@ class DirectMessageServiceTests {
 
     void testSendMessageWithSubjectAndReply() {
         assertNotNull (directMessageService.sendMessage(1,2,'Test', 'The subject'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test', 'The subject'))
+        assertNotNull (directMessageService.sendMessage(1,2,'Test', 'The subject'))
         assertNotNull (directMessageService.sendMessage(2,1,'Test', 'The subject'))
 
-        def message = Message.findByFromId(1)
-        assert  message.subject == 'The subject'
-        assert  message.reply == false
-        assert  message.lastOnSubject == false
+        def messages = Message.findAllByFromId(1)
+        assert  messages[0].subject == 'The subject'
+        assert  messages[0].reply == false
+        assert  messages[0].lastOnSubject == false
+        assert  messages[1].subject == 'The subject'
+        assert  messages[1].reply == true
+        assert  messages[1].lastOnSubject == false
+        assert  messages[2].subject == 'The subject'
+        assert  messages[2].reply == true
+        assert  messages[2].lastOnSubject == false
 
 
-        message = Message.findByFromId(2)
+
+        def message = Message.findByFromId(2)
         assert  message.subject == 'The subject'
         assert  message.reply == true
         assert  message.lastOnSubject == true
