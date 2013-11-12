@@ -46,7 +46,11 @@ class Message {
      */
     Boolean lastOnSubject = false
 
-
+    /**
+     * The number of messages between those same users
+     * With the same subject
+     */
+    Integer numberOfMessagesOnSubject = 1
 
     /**
      * Date when the message was created
@@ -62,4 +66,7 @@ class Message {
         text type:"text"
         subject type:"text", index: 'directmessages_message_subject_idx'
     }
+
+
+
 }

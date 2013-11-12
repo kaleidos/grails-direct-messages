@@ -20,15 +20,16 @@ class DirectMessageService {
         def reply = false
         def s = subject?.trim()
 
+        Message m = new Message(fromId:fromId, toId: toId, text: text.trim(), last:true, lastOnSubject:true, subject:s)
+
         if (s) {
             //Find messages between those users with same subject
-            messagesOnSubject = messages.findAll{it.subject == s}
+            messagesOnSubject = findAllMessagesOnSubject(m)
             if (messagesOnSubject) {
-                reply = true
+                m.reply = true
             }
         }
 
-        Message m = new Message(fromId:fromId, toId: toId, text: text.trim(), last:true, lastOnSubject:true, subject:s, reply:reply)
 
         if (m.save()){
             //If save is ok, the old last message isn't last anymore
@@ -40,9 +41,15 @@ class DirectMessageService {
             if (messagesOnSubject) {
                 messagesOnSubject[0].lastOnSubject = false
                 messagesOnSubject[0].save()
+                messagesOnSubject.each{
+                     it.numberOfMessagesOnSubject = messagesOnSubject.size() +1
+                     it.save()
+                 }
             }
+            return m
         }
-        return m
+        println "--->${m.errors}"
+        return null
     }
 
     /**
@@ -313,4 +320,27 @@ class DirectMessageService {
         return messages
 
     }
+
+
+    /**
+     * Find all the messages between those same users with the same subject
+     * @param message the model message
+     * @return a list of Messages
+     */
+     List<Message> findAllMessagesOnSubject(Message message){
+         return Message.createCriteria().list{
+             or{
+                 and {
+                     eq 'fromId', message.fromId
+                     eq 'toId', message.toId
+                 }
+                 and {
+                     eq 'fromId', message.toId
+                     eq 'toId', message.fromId
+                 }
+             }
+             eq 'subject', message.subject
+         }
+
+     }
 }

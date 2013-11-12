@@ -870,4 +870,48 @@ class DirectMessageServiceTests {
 
     }
 
+
+    void testFindAllMessagesOnSubject() {
+        def message1 = directMessageService.sendMessage(1,2,'Test 1', 'Subject 1')
+        def message2 = directMessageService.sendMessage(1,2,'Test 2', 'Subject 1')
+        def message3 = directMessageService.sendMessage(2,1,'Test 3', 'Subject 1')
+
+        def message4 = directMessageService.sendMessage(1,2,'Test 16', 'Subject 5')
+
+        def message5 = directMessageService.sendMessage(2,1,'Test 4', 'Subject 2')
+
+        def message6 = directMessageService.sendMessage(1,2,'Test 7', 'Subject 3')
+        def message7 = directMessageService.sendMessage(2,1,'Test 8', 'Subject 3')
+        def message8 = directMessageService.sendMessage(2,1,'Test 9', 'Subject 3')
+
+        def message9 = directMessageService.sendMessage(3,1,'Test 10', 'Subject 1')
+        def message10 = directMessageService.sendMessage(3,1,'Test 11', 'Subject 1')
+        def message11 = directMessageService.sendMessage(1,3,'Test 12', 'Subject 1')
+
+        def message12 = directMessageService.sendMessage(1,3,'Test 13', 'Subject 2')
+        def message13 = directMessageService.sendMessage(1,3,'Test 14', 'Subject 2')
+        def message14 = directMessageService.sendMessage(3,1,'Test 15', 'Subject 2')
+
+
+        assert directMessageService.findAllMessagesOnSubject(message1).size() == 3
+        assert directMessageService.findAllMessagesOnSubject(message2).size() == 3
+        assert directMessageService.findAllMessagesOnSubject(message3).size() == 3
+
+        assert directMessageService.findAllMessagesOnSubject(message4).size() == 1
+
+        assert directMessageService.findAllMessagesOnSubject(message5).size() == 1
+
+        assert directMessageService.findAllMessagesOnSubject(message6).size() == 3
+        assert directMessageService.findAllMessagesOnSubject(message7).size() == 3
+        assert directMessageService.findAllMessagesOnSubject(message8).size() == 3
+
+        assert directMessageService.findAllMessagesOnSubject(message9).size() == 3
+        assert directMessageService.findAllMessagesOnSubject(message10).size() == 3
+        assert directMessageService.findAllMessagesOnSubject(message11).size() == 3
+
+        assert directMessageService.findAllMessagesOnSubject(message12).size() == 3
+        assert directMessageService.findAllMessagesOnSubject(message13).size() == 3
+        assert directMessageService.findAllMessagesOnSubject(message14).size() == 3
+    }
+
 }
