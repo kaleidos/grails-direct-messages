@@ -296,12 +296,29 @@ class DirectMessageService {
             messages = messages.sort{it.toId}
         } else if (sort == 'subject') {
             messages = messages.sort{it.subject}
-        } else {
+        } else if (sort == 'dateCreated') {
             messages = messages.sort{it.dateCreated}
+        } else {
+            //If the user hadn't ask for a sort, make a special sort with the unreaded messages first
+            messages = messages.sort{a,b->
+                if (a.readed) {
+                    if (b.readed) {
+                        return a.dateCreated < b.dateCreated?-1:1
+                    } else {
+                        return -1
+                    }
+                } else {
+                    if (b.readed) {
+                        return 1
+                    } else {
+                        return a.dateCreated < b.dateCreated?-1:1
+                    }
+                }
+            }
         }
 
 
-        if (order == 'des') {
+        if (order == 'desc') {
             messages = messages.reverse()
         }
 

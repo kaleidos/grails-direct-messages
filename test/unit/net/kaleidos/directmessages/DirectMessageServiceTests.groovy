@@ -389,7 +389,7 @@ class DirectMessageServiceTests {
         assertNotNull (directMessageService.sendMessage(3,1,'Test 15', 'Subject 2'))
 
 
-        def result = directMessageService.getReceivedMessagesBySubject(1, 0, -1, 'dateCreated', 'des')
+        def result = directMessageService.getReceivedMessagesBySubject(1, 0, -1, 'dateCreated', 'desc')
         def messages = result.messages
 
         assert messages.size() == 5
@@ -678,7 +678,7 @@ class DirectMessageServiceTests {
         assertNotNull (directMessageService.sendMessage(3,1,'Test 15', 'Subject 2'))
 
 
-        def result = directMessageService.getSentMessagesBySubject(1, 0, -1, 'dateCreated', 'des')
+        def result = directMessageService.getSentMessagesBySubject(1, 0, -1, 'dateCreated', 'desc')
         def messages = result.messages
 
         assert messages.size() == 5
