@@ -923,4 +923,16 @@ class DirectMessageServiceTests {
         assert directMessageService.findAllMessagesOnSubject(message14).size() == 3
     }
 
+    void testDeleteMessage() {
+        def message = directMessageService.sendMessage(1,2,'Test 1', 'Subject 1')
+        assert message.fromDeleted == false
+        assert message.toDeleted == false
+        directMessageService.deleteMessage(1, message)
+        assert message.fromDeleted == true
+        assert message.toDeleted == false
+        directMessageService.deleteMessage(2, message)
+        assert message.fromDeleted == true
+        assert message.toDeleted == true
+    }
+
 }

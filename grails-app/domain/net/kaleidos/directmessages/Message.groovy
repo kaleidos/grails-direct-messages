@@ -53,6 +53,16 @@ class Message {
     Integer numberOfMessagesOnSubject = 1
 
     /**
+     * Logical deletion. This message becomes invisible for the 'from' user
+     */
+    Boolean fromDeleted = false
+
+    /**
+     * Logical deletion. This message becomes invisible for the 'to' user
+     */
+    Boolean toDeleted = false
+
+    /**
      * Date when the message was created
      */
     Date dateCreated

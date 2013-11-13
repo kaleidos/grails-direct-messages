@@ -359,4 +359,17 @@ class DirectMessageService {
          }
 
      }
+
+     /**
+      * Delete message from the point of view of an user
+      */
+      void deleteMessage(long userId, Message message){
+          if (message.fromId == userId) {
+              message.fromDeleted = true
+              message.save()
+          } else if (message.toId == userId) {
+              message.toDeleted = true
+              message.save()
+          }
+      }
 }
