@@ -925,14 +925,74 @@ class DirectMessageServiceTests {
 
     void testDeleteMessage() {
         def message = directMessageService.sendMessage(1,2,'Test 1', 'Subject 1')
-        assert message.fromDeleted == false
-        assert message.toDeleted == false
-        directMessageService.deleteMessage(1, message)
-        assert message.fromDeleted == true
-        assert message.toDeleted == false
-        directMessageService.deleteMessage(2, message)
-        assert message.fromDeleted == true
-        assert message.toDeleted == true
+        assert message.fromDeletedOnSubject == false
+        assert message.toDeletedOnSubject == false
+        directMessageService.deleteMessagesOnSubject(1, message)
+        assert message.fromDeletedOnSubject == true
+        assert message.toDeletedOnSubject == false
+        directMessageService.deleteMessagesOnSubject(2, message)
+        assert message.fromDeletedOnSubject == true
+        assert message.toDeletedOnSubject == true
     }
+
+    void testNotShowDeleteMessageOnGetMessagesBySubject() {
+        def message1 = directMessageService.sendMessage(1,2,'Test 1', 'Subject 1')
+        def message2 = directMessageService.sendMessage(1,2,'Test 2', 'Subject 1')
+        def message3 = directMessageService.sendMessage(2,1,'Test 3', 'Subject 1')
+
+        def message4 = directMessageService.sendMessage(1,2,'Test 16', 'Subject 5')
+
+        def message5 = directMessageService.sendMessage(2,1,'Test 4', 'Subject 2')
+
+        def message6 = directMessageService.sendMessage(1,2,'Test 7', 'Subject 3')
+        def message7 = directMessageService.sendMessage(2,1,'Test 8', 'Subject 3')
+        def message8 = directMessageService.sendMessage(2,1,'Test 9', 'Subject 3')
+
+        def message9 = directMessageService.sendMessage(3,1,'Test 10', 'Subject 1')
+        def message10 = directMessageService.sendMessage(3,1,'Test 11', 'Subject 1')
+        def message11 = directMessageService.sendMessage(1,3,'Test 12', 'Subject 1')
+
+        def message12 = directMessageService.sendMessage(1,3,'Test 13', 'Subject 2')
+        def message13 = directMessageService.sendMessage(1,3,'Test 14', 'Subject 2')
+        def message14 = directMessageService.sendMessage(3,1,'Test 15', 'Subject 2')
+
+        assert directMessageService.getMessagesBySubject(1, true).size() == 5
+        assert directMessageService.getMessagesBySubject(2, true).size() == 3
+        assert directMessageService.getMessagesBySubject(3, true).size() == 2
+
+        assert directMessageService.getMessagesBySubject(1, false).size() == 5
+        assert directMessageService.getMessagesBySubject(2, false).size() == 3
+        assert directMessageService.getMessagesBySubject(3, false).size() == 2
+
+        //try to delete a thread that doesn't belongs to the user
+        directMessageService.deleteMessagesOnSubject(3, message1)
+        assert directMessageService.getMessagesBySubject(1, true).size() == 5
+        assert directMessageService.getMessagesBySubject(2, true).size() == 3
+        assert directMessageService.getMessagesBySubject(3, true).size() == 2
+
+        assert directMessageService.getMessagesBySubject(1, false).size() == 5
+        assert directMessageService.getMessagesBySubject(2, false).size() == 3
+        assert directMessageService.getMessagesBySubject(3, false).size() == 2
+
+
+        //Delete a thread for an user, the other user keep seeing the thread
+        directMessageService.deleteMessagesOnSubject(1, message1)
+        assert directMessageService.getMessagesBySubject(1, true).size() == 4
+        assert directMessageService.getMessagesBySubject(2, true).size() == 3
+
+        assert directMessageService.getMessagesBySubject(1, false).size() == 4
+        assert directMessageService.getMessagesBySubject(2, false).size() == 3
+
+        //Delete same thread for the other user
+        directMessageService.deleteMessagesOnSubject(2, message1)
+        assert directMessageService.getMessagesBySubject(1, true).size() == 4
+        assert directMessageService.getMessagesBySubject(2, true).size() == 2
+
+        assert directMessageService.getMessagesBySubject(1, false).size() == 4
+        assert directMessageService.getMessagesBySubject(2, false).size() == 2
+
+
+    }
+
 
 }

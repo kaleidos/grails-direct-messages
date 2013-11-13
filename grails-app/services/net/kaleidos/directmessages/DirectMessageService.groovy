@@ -209,6 +209,11 @@ class DirectMessageService {
     }
 
 
+//////////////////////////////////////////////////////////////////
+//           METHODS FOR MESSAGES WITH SUBJECT                  //
+//////////////////////////////////////////////////////////////////
+
+
     /**
      * Get a list of the messages received by the user, grouping by subject, that is, 'last' messages of every subject.
      * @param id Id of the user
@@ -258,7 +263,7 @@ class DirectMessageService {
     List<Message> getMessagesBySubject(long id, boolean received){
         def resultMessages = []
 
-        def messages = received?Message.findAllByToId(id):Message.findAllByFromId(id)
+        def messages = received?Message.findAllByToIdAndToDeletedOnSubject(id, false):Message.findAllByFromIdAndFromDeletedOnSubject(id, false)
 
         while (messages) {
             def message = messages[0]
@@ -361,15 +366,18 @@ class DirectMessageService {
      }
 
      /**
-      * Delete message from the point of view of an user
+      * Delete messages on a subject from the point of view of an user
       */
-      void deleteMessage(long userId, Message message){
-          if (message.fromId == userId) {
-              message.fromDeleted = true
-              message.save()
-          } else if (message.toId == userId) {
-              message.toDeleted = true
-              message.save()
+      void deleteMessagesOnSubject(long userId, Message message){
+          def messages = findAllMessagesOnSubject(message)
+          messages.each {
+              if (it.fromId == userId) {
+                  it.fromDeletedOnSubject = true
+                  it.save()
+              } else if (it.toId == userId) {
+                  it.toDeletedOnSubject = true
+                  it.save()
+              }
           }
       }
 }

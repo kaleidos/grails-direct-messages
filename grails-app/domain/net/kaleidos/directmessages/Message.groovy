@@ -55,12 +55,12 @@ class Message {
     /**
      * Logical deletion. This message becomes invisible for the 'from' user
      */
-    Boolean fromDeleted = false
+    Boolean fromDeletedOnSubject = false
 
     /**
      * Logical deletion. This message becomes invisible for the 'to' user
      */
-    Boolean toDeleted = false
+    Boolean toDeletedOnSubject = false
 
     /**
      * Date when the message was created
