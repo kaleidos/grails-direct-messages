@@ -44,23 +44,23 @@ class Message {
     /**
      * Is this the last message between those users on this subject?. Useful for "mail" type messages
      */
-    Boolean lastOnSubject = false
+    Boolean lastOnThread = false
 
     /**
      * The number of messages between those same users
      * With the same subject
      */
-    Integer numberOfMessagesOnSubject = 1
+    Integer numberOfMessagesOnThread = 1
 
     /**
      * Logical deletion. This message becomes invisible for the 'from' user
      */
-    Boolean fromDeletedOnSubject = false
+    Boolean fromDeletedOnThread = false
 
     /**
      * Logical deletion. This message becomes invisible for the 'to' user
      */
-    Boolean toDeletedOnSubject = false
+    Boolean toDeletedOnThread = false
 
     /**
      * Date when the message was created

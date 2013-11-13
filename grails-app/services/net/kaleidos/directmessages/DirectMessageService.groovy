@@ -13,24 +13,12 @@ class DirectMessageService {
      * @param text The text of the message
      * @return a Message
      */
-    Message sendMessage(long fromId, long toId, String text, String subject=null) {
+    Message sendMessage(long fromId, long toId, String text) {
         def messages = getMessages(fromId, toId, true)
-        def messagesOnSubject = null
 
         def reply = false
-        def s = subject?.trim()
 
-        Message m = new Message(fromId:fromId, toId: toId, text: text.trim(), last:true, lastOnSubject:true, subject:s)
-
-        if (s) {
-            //Find messages between those users with same subject
-            messagesOnSubject = findAllMessagesOnSubject(m)
-            if (messagesOnSubject) {
-                m.reply = true
-                m.numberOfMessagesOnSubject = messagesOnSubject.size() +1
-            }
-        }
-
+        Message m = new Message(fromId:fromId, toId: toId, text: text.trim(), last:true)
 
         if (m.save()){
             //If save is ok, the old last message isn't last anymore
@@ -38,13 +26,6 @@ class DirectMessageService {
                 messages[0].last = false
                 messages[0].save()
             }
-
-
-            messagesOnSubject.each{
-                 it.numberOfMessagesOnSubject = messagesOnSubject.size() +1
-                 it.lastOnSubject = false
-                 it.save()
-             }
 
             return m
         }
