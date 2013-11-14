@@ -1,5 +1,5 @@
-grails-direct-messages
-======================
+grails-direct-messages v1.0
+===========================
 
 Grails plugin for internal messages between users
 
@@ -90,6 +90,24 @@ https://github.com/kaleidos/grails-direct-messages-sample
 #### Threaded Messages
 
 https://github.com/kaleidos/grails-direct-messages-mail-sample
+
+### Backward Compatibility with version 0.1
+
+All the new fields of the domain class are nullabe, so as long as you don't use the new threadMessageService,  
+you probably won't have problems.
+
+However, it is advisable to upgrade the database in order to add the new fields. The sql sentences are:
+
+    ALTER TABLE directmessages_message ADD from_deleted_on_thread boolean NULL
+    ALTER TABLE directmessages_message ADD to_deleted_on_thread boolean NULL
+    ALTER TABLE directmessages_message ADD from_name varchar(255) NULL
+    ALTER TABLE directmessages_message ADD to_name varchar(255) NULL
+    ALTER TABLE directmessages_message ADD last_on_thread boolean NULL
+    ALTER TABLE directmessages_message ADD number_of_messages_on_thread integer NULL
+    ALTER TABLE directmessages_message ADD reply boolean NULL
+    ALTER TABLE directmessages_message ADD subject longvarchar NULL
+
+
 
 
 ### Available service methods
