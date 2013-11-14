@@ -10,6 +10,8 @@ class ThreadMessageService {
      * Send a message from an user to another
      * @param fromId Id of the user that send the message
      * @param toId Id of the user that receives the message
+     * @param fromName Name the user that send the message, for sorting purposes
+     * @param toName Name of the user that receives the message, for sorting purposes
      * @param text The text of the message
      * @param subject The subject of the message
      * @return a Message
@@ -61,7 +63,7 @@ class ThreadMessageService {
     }
 
     /**
-     * Get a list of the messages received by the user, grouping by thread, that is, 'last' messages of every thread.
+     * Get a list of the messages received by the user, grouping by thread, that is, 'last' received messages of every thread.
      * @param id Id of the user
      * @param offset Number of messages to skip (for pagination)
      * @param itemsByPage Number of messages to return (for pagination). -1 will return all messages.
@@ -79,7 +81,7 @@ class ThreadMessageService {
     }
 
     /**
-     * Get a list of the messages sent by the user, grouping by thread, that is, 'last' messages of every thread.
+     * Get a list of the messages sent by the user, grouping by thread, that is, 'last' sent messages of every thread.
      * @param id Id of the user
      * @param offset Number of messages to skip (for pagination)
      * @param itemsByPage Number of messages to return (for pagination). -1 will return all messages.
@@ -94,6 +96,56 @@ class ThreadMessageService {
         result.messages = messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
         return result
     }
+
+    /**
+     * Find all the messages on this thread (between those same users with the same subject)
+     * @param message any of the messages on the thread
+     * @return a list of Messages
+     */
+     List<Message> findAllMessagesOnThread(Message message){
+         return Message.createCriteria().list{
+             or{
+                 and {
+                     eq 'fromId', message.fromId
+                     eq 'toId', message.toId
+                 }
+                 and {
+                     eq 'fromId', message.toId
+                     eq 'toId', message.fromId
+                 }
+             }
+             eq 'subject', message.subject
+         }
+
+     }
+
+     /**
+      * Delete messages on a thread from the point of view of an user.
+      * On a thread between Alice and Bob, if Alice delete the thread, it is only deleted
+      * from Alice's point of view. From Bob's point of view the thread isn't deleted.
+      * @param userId the id of the user that wants to delete the thread
+      * @param message any of the messages on the thread
+      */
+      void deleteMessagesOnThread(long userId, Message message){
+          def messages = findAllMessagesOnThread(message)
+          messages.each {
+              if (it.fromId == userId) {
+                  it.fromDeletedOnThread = true
+                  it.save()
+              } else if (it.toId == userId) {
+                  it.toDeletedOnThread = true
+                  it.save()
+              }
+          }
+      }
+
+
+
+
+    ///////////////////////////
+    // Private methods
+    ///////////////////////////
+
 
 
     /**
@@ -150,6 +202,7 @@ class ThreadMessageService {
         return resultMessages
 
     }
+
 
 
     /**
@@ -215,43 +268,4 @@ class ThreadMessageService {
         return messages
 
     }
-
-
-    /**
-     * Find all the messages between those same users with the same subject
-     * @param message the model message
-     * @return a list of Messages
-     */
-     List<Message> findAllMessagesOnThread(Message message){
-         return Message.createCriteria().list{
-             or{
-                 and {
-                     eq 'fromId', message.fromId
-                     eq 'toId', message.toId
-                 }
-                 and {
-                     eq 'fromId', message.toId
-                     eq 'toId', message.fromId
-                 }
-             }
-             eq 'subject', message.subject
-         }
-
-     }
-
-     /**
-      * Delete messages on a subject from the point of view of an user
-      */
-      void deleteMessagesOnThread(long userId, Message message){
-          def messages = findAllMessagesOnThread(message)
-          messages.each {
-              if (it.fromId == userId) {
-                  it.fromDeletedOnThread = true
-                  it.save()
-              } else if (it.toId == userId) {
-                  it.toDeletedOnThread = true
-                  it.save()
-              }
-          }
-      }
 }
