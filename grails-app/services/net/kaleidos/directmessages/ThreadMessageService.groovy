@@ -42,6 +42,25 @@ class ThreadMessageService {
 
 
     /**
+     * Get a list of the messages by the user, grouping by thread, that is, 'last' messages of every thread.
+     * Those messages could be sent or received messages
+     * @param id Id of the user
+     * @param offset Number of messages to skip (for pagination)
+     * @param itemsByPage Number of messages to return (for pagination). -1 will return all messages.
+     * @param sort Field to order by. Can be one of 'fromId', 'toId', 'subject' or 'dateCreated'
+     * @param order 'asc' or 'desc' for ascendig or descending order.
+     * @return a map with: messages (the list of Messages), totalNum (the total num of messages, for the pagination), unreadedNum (the number of unreaded messages)
+     */
+    Map getAllByThread(long id, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
+        def result = [:]
+        def resultMessages = getThreads (id, true, true)
+        result.totalNum = resultMessages.size()
+        result.unreadedNum = resultMessages.count{ it.readed == false }
+        result.messages = messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
+        return result
+    }
+
+    /**
      * Get a list of the messages received by the user, grouping by thread, that is, 'last' messages of every thread.
      * @param id Id of the user
      * @param offset Number of messages to skip (for pagination)
@@ -52,7 +71,7 @@ class ThreadMessageService {
      */
     Map getReceivedByThread(long id, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
         def result = [:]
-        def resultMessages = getThreads (id, true)
+        def resultMessages = getThreads (id, true, false)
         result.totalNum = resultMessages.size()
         result.unreadedNum = resultMessages.count{ it.readed == false }
         result.messages = messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
@@ -70,7 +89,7 @@ class ThreadMessageService {
      */
     Map getSentByThread(long id, int offset = 0, int itemsByPage = -1, String sort='dateCreated', String order='asc'){
         def result = [:]
-        def resultMessages = getThreads (id, false)
+        def resultMessages = getThreads (id, false, true)
         result.totalNum = resultMessages.size()
         result.messages = messagesSortAndPagination (resultMessages, offset, itemsByPage, sort, order)
         return result
@@ -87,15 +106,39 @@ class ThreadMessageService {
      * @param order 'asc' or 'desc' for ascendig or descending order.
      * @return a list of Messages
      */
-    List<Message> getThreads(long id, boolean received){
+    List<Message> getThreads(long id, boolean received, boolean sent){
         def resultMessages = []
+        def messages = []
 
-        def messages = received?Message.findAllByToIdAndToDeletedOnThread(id, false):Message.findAllByFromIdAndFromDeletedOnThread(id, false)
+        if (received && sent) {
+            messages = Message.createCriteria().list{
+                or{
+                    and {
+                        eq 'fromId', id
+                        eq 'fromDeletedOnThread', false
+                    }
+                    and {
+                        eq 'toId', id
+                        eq 'toDeletedOnThread', false
+                    }
+                }
+            }
+        } else if (received) {
+            messages = Message.findAllByToIdAndToDeletedOnThread(id, false)
+        } else if (sent) {
+            messages = Message.findAllByFromIdAndFromDeletedOnThread(id, false)
+        }
 
         while (messages) {
             def message = messages[0]
             def subjectGroup
-            if (received) {
+            if (received && sent) {
+                subjectGroup = messages.findAll{
+                    it.subject == message.subject &&
+                    ((it.fromId == message.fromId && it.toId == message.toId) ||
+                    (it.fromId == message.toId && it.toId == message.fromId))
+                }.sort{it.dateCreated}
+            } else if (received) {
                 subjectGroup = messages.findAll{it.fromId == message.fromId && it.subject == message.subject}.sort{it.dateCreated}
             } else {
                 subjectGroup = messages.findAll{it.toId == message.toId && it.subject == message.subject}.sort{it.dateCreated}
