@@ -14,11 +14,11 @@ class ThreadMessageService {
      * @param subject The subject of the message
      * @return a Message
      */
-    Message sendThreadMessage(long fromId, long toId, String text, String subject) {
+    Message sendThreadMessage(long fromId, long toId, String fromName, String toName, String text, String subject) {
         def reply = false
         def s = subject?.trim()
 
-        Message m = new Message(fromId:fromId, toId: toId, text: text.trim(), last:true, lastOnThread:true, subject:s)
+        Message m = new Message(fromId:fromId, toId: toId, fromName:fromName, toName:toName, text: text.trim(), last:true, lastOnThread:true, subject:s)
 
         if (s) {
             //Find messages between those users with same subject
@@ -126,6 +126,10 @@ class ThreadMessageService {
             messages = messages.sort{it.fromId}
         } else if (sort == 'toId') {
             messages = messages.sort{it.toId}
+        } else if (sort == 'fromName') {
+            messages = messages.sort{it.fromName}
+        } else if (sort == 'toName') {
+            messages = messages.sort{it.toName}
         } else if (sort == 'subject') {
             messages = messages.sort{it.subject}
         } else if (sort == 'dateCreated') {

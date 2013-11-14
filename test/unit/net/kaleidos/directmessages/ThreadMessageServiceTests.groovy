@@ -10,17 +10,17 @@ class ThreadMessageServiceTests {
     def threadMessageService = new ThreadMessageService()
 
     void testSendMessageWithSubject() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test', 'The subject'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test', 'The subject'))
         def message = Message.findByFromId(1)
         assert  message.subject == 'The subject'
         assert  message.reply == false
     }
 
     void testSendMessageWithSubjectAndReply() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test', 'The subject'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test', 'The subject'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test', 'The subject'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test', 'The subject'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test', 'The subject'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test', 'The subject'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test', 'The subject'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test', 'The subject'))
 
         def messages = Message.findAllByFromId(1)
         assert  messages[0].subject == 'The subject'
@@ -44,25 +44,25 @@ class ThreadMessageServiceTests {
 
 
     void testGetReceivedByThread() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 1'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 16', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 16', 'Subject 5'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 4', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 4', 'Subject 2'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 8', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 8', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 3'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 12', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 12', 'Subject 1'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 13', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 14', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 15', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 13', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 14', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 15', 'Subject 2'))
 
 
         def result = threadMessageService.getReceivedByThread(1)
@@ -103,25 +103,25 @@ class ThreadMessageServiceTests {
     }
 
     void testGetReceivedByThreadOrder() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 1'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 16', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 16', 'Subject 5'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 4', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 4', 'Subject 2'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 8', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 8', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 3'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 12', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 12', 'Subject 1'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 13', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 14', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 15', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 13', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 14', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 15', 'Subject 2'))
 
 
         def result = threadMessageService.getReceivedByThread(1, 0, -1, 'dateCreated', 'desc')
@@ -162,25 +162,25 @@ class ThreadMessageServiceTests {
     }
 
     void testGetReceivedByThreadSort() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'CCC'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'CCC'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'CCC'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'CCC'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'CCC'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'CCC'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 16', 'AAA'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 16', 'AAA'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 4', 'DDD'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 4', 'DDD'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'BBB'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 8', 'BBB'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'BBB'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'BBB'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 8', 'BBB'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'BBB'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'EEE'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'EEE'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 12', 'EEE'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'EEE'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'EEE'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 12', 'EEE'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 13', 'FFF'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 14', 'FFF'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 15', 'FFF'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 13', 'FFF'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 14', 'FFF'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 15', 'FFF'))
 
 
         def result = threadMessageService.getReceivedByThread(1, 0, -1, 'subject', 'asc')
@@ -222,17 +222,17 @@ class ThreadMessageServiceTests {
     }
 
     void testGetReceivedByThreadPagination() {
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 2', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 4', 'Subject 4'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 5', 'Subject 5'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 6', 'Subject 6'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 7', 'Subject 7'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 8', 'Subject 8'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 9'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 10'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 11'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 2', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 4', 'Subject 4'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 5', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 6', 'Subject 6'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 7', 'Subject 7'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 8', 'Subject 8'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 9'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 10'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 11'))
 
         Message.findAllByFromId(3).each{
             it.readed = true
@@ -255,17 +255,17 @@ class ThreadMessageServiceTests {
     }
 
     void testGetReceivedByThreadPaginationFirstPage() {
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 2', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 4', 'Subject 4'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 5', 'Subject 5'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 6', 'Subject 6'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 7', 'Subject 7'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 8', 'Subject 8'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 9'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 10'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 11'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 2', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 4', 'Subject 4'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 5', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 6', 'Subject 6'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 7', 'Subject 7'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 8', 'Subject 8'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 9'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 10'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 11'))
 
 
 
@@ -282,17 +282,17 @@ class ThreadMessageServiceTests {
     }
 
     void testGetReceivedByThreadPaginationLastPage() {
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 2', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 4', 'Subject 4'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 5', 'Subject 5'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 6', 'Subject 6'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 7', 'Subject 7'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 8', 'Subject 8'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 9'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 10'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 11'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 2', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 4', 'Subject 4'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 5', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 6', 'Subject 6'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 7', 'Subject 7'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 8', 'Subject 8'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 9'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 10'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 11'))
 
 
 
@@ -308,17 +308,17 @@ class ThreadMessageServiceTests {
     }
 
     void testGetReceivedByThreadPaginationOutOfRange() {
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 2', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 4', 'Subject 4'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 5', 'Subject 5'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 6', 'Subject 6'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 7', 'Subject 7'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 8', 'Subject 8'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 9'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 10'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 11'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 2', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 4', 'Subject 4'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 5', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 6', 'Subject 6'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 7', 'Subject 7'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 8', 'Subject 8'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 9'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 10'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 11'))
 
 
 
@@ -333,25 +333,25 @@ class ThreadMessageServiceTests {
 
 
     void testGetSentByThread() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 1'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 16', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 16', 'Subject 5'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 4', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 4', 'Subject 2'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 8', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 8', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 3'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 12', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 12', 'Subject 1'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 13', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 14', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 15', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 13', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 14', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 15', 'Subject 2'))
 
 
         def result = threadMessageService.getSentByThread(1)
@@ -392,25 +392,25 @@ class ThreadMessageServiceTests {
     }
 
     void testGetSentByThreadOrder() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 1'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 16', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 16', 'Subject 5'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 4', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 4', 'Subject 2'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 8', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 8', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 3'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 12', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 12', 'Subject 1'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 13', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 14', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 15', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 13', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 14', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 15', 'Subject 2'))
 
 
         def result = threadMessageService.getSentByThread(1, 0, -1, 'dateCreated', 'desc')
@@ -451,25 +451,25 @@ class ThreadMessageServiceTests {
     }
 
     void testGetSentByThreadSort() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'CCC'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'CCC'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 3', 'CCC'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'CCC'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'CCC'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'CCC'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 16', 'AAA'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 16', 'AAA'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 4', 'DDD'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 4', 'DDD'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'BBB'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 8', 'BBB'))
-        assertNotNull (threadMessageService.sendThreadMessage(2,1,'Test 9', 'BBB'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'BBB'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 8', 'BBB'))
+        assertNotNull (threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'BBB'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 10', 'EEE'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 11', 'EEE'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 12', 'EEE'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'EEE'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'EEE'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 12', 'EEE'))
 
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 13', 'FFF'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 14', 'FFF'))
-        assertNotNull (threadMessageService.sendThreadMessage(3,1,'Test 15', 'FFF'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 13', 'FFF'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 14', 'FFF'))
+        assertNotNull (threadMessageService.sendThreadMessage(3,1,'three','one','Test 15', 'FFF'))
 
 
         def result = threadMessageService.getSentByThread(1, 0, -1, 'subject', 'asc')
@@ -511,17 +511,17 @@ class ThreadMessageServiceTests {
     }
 
     void testGetSentByThreadPagination() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 3', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 4', 'Subject 4'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 5', 'Subject 5'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 6', 'Subject 6'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 7'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 8', 'Subject 8'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 9', 'Subject 9'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 10', 'Subject 10'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 11', 'Subject 11'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 3', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 4', 'Subject 4'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 5', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 6', 'Subject 6'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 7'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 8', 'Subject 8'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 9', 'Subject 9'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 10', 'Subject 10'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 11', 'Subject 11'))
 
 
 
@@ -538,17 +538,17 @@ class ThreadMessageServiceTests {
     }
 
     void testGetSentByThreadPaginationFirstPage() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 3', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 4', 'Subject 4'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 5', 'Subject 5'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 6', 'Subject 6'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 7'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 8', 'Subject 8'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 9', 'Subject 9'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 10', 'Subject 10'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 11', 'Subject 11'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 3', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 4', 'Subject 4'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 5', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 6', 'Subject 6'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 7'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 8', 'Subject 8'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 9', 'Subject 9'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 10', 'Subject 10'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 11', 'Subject 11'))
 
 
 
@@ -565,17 +565,17 @@ class ThreadMessageServiceTests {
     }
 
     void testGetSentByThreadPaginationLastPage() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 3', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 4', 'Subject 4'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 5', 'Subject 5'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 6', 'Subject 6'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 7'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 8', 'Subject 8'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 9', 'Subject 9'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 10', 'Subject 10'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 11', 'Subject 11'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 3', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 4', 'Subject 4'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 5', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 6', 'Subject 6'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 7'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 8', 'Subject 8'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 9', 'Subject 9'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 10', 'Subject 10'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 11', 'Subject 11'))
 
 
 
@@ -591,17 +591,17 @@ class ThreadMessageServiceTests {
     }
 
     void testGetSentByThreadPaginationOutOfRange() {
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 2'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 3', 'Subject 3'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 4', 'Subject 4'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 5', 'Subject 5'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 6', 'Subject 6'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 7'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 8', 'Subject 8'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,2,'Test 9', 'Subject 9'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 10', 'Subject 10'))
-        assertNotNull (threadMessageService.sendThreadMessage(1,3,'Test 11', 'Subject 11'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 2'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 3', 'Subject 3'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 4', 'Subject 4'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 5', 'Subject 5'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 6', 'Subject 6'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 7'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 8', 'Subject 8'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 9', 'Subject 9'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 10', 'Subject 10'))
+        assertNotNull (threadMessageService.sendThreadMessage(1,3,'one','three','Test 11', 'Subject 11'))
 
 
 
@@ -616,25 +616,25 @@ class ThreadMessageServiceTests {
 
 
     void testFindAllMessagesOnThread() {
-        def message1 = threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1')
-        def message2 = threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 1')
-        def message3 = threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 1')
+        def message1 = threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1')
+        def message2 = threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 1')
+        def message3 = threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 1')
 
-        def message4 = threadMessageService.sendThreadMessage(1,2,'Test 16', 'Subject 5')
+        def message4 = threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 16', 'Subject 5')
 
-        def message5 = threadMessageService.sendThreadMessage(2,1,'Test 4', 'Subject 2')
+        def message5 = threadMessageService.sendThreadMessage(2,1,'two','one','Test 4', 'Subject 2')
 
-        def message6 = threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 3')
-        def message7 = threadMessageService.sendThreadMessage(2,1,'Test 8', 'Subject 3')
-        def message8 = threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 3')
+        def message6 = threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 3')
+        def message7 = threadMessageService.sendThreadMessage(2,1,'two','one','Test 8', 'Subject 3')
+        def message8 = threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 3')
 
-        def message9 = threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 1')
-        def message10 = threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 1')
-        def message11 = threadMessageService.sendThreadMessage(1,3,'Test 12', 'Subject 1')
+        def message9 = threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 1')
+        def message10 = threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 1')
+        def message11 = threadMessageService.sendThreadMessage(1,3,'one','three','Test 12', 'Subject 1')
 
-        def message12 = threadMessageService.sendThreadMessage(1,3,'Test 13', 'Subject 2')
-        def message13 = threadMessageService.sendThreadMessage(1,3,'Test 14', 'Subject 2')
-        def message14 = threadMessageService.sendThreadMessage(3,1,'Test 15', 'Subject 2')
+        def message12 = threadMessageService.sendThreadMessage(1,3,'one','three','Test 13', 'Subject 2')
+        def message13 = threadMessageService.sendThreadMessage(1,3,'one','three','Test 14', 'Subject 2')
+        def message14 = threadMessageService.sendThreadMessage(3,1,'three','one','Test 15', 'Subject 2')
 
 
         assert threadMessageService.findAllMessagesOnThread(message1).size() == 3
@@ -659,7 +659,7 @@ class ThreadMessageServiceTests {
     }
 
     void testDeleteMessage() {
-        def message = threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1')
+        def message = threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1')
         assert message.fromDeletedOnThread == false
         assert message.toDeletedOnThread == false
         threadMessageService.deleteMessagesOnThread(1, message)
@@ -671,25 +671,25 @@ class ThreadMessageServiceTests {
     }
 
     void testNotShowDeleteMessageOnGetThreads() {
-        def message1 = threadMessageService.sendThreadMessage(1,2,'Test 1', 'Subject 1')
-        def message2 = threadMessageService.sendThreadMessage(1,2,'Test 2', 'Subject 1')
-        def message3 = threadMessageService.sendThreadMessage(2,1,'Test 3', 'Subject 1')
+        def message1 = threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 1', 'Subject 1')
+        def message2 = threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 2', 'Subject 1')
+        def message3 = threadMessageService.sendThreadMessage(2,1,'two','one','Test 3', 'Subject 1')
 
-        def message4 = threadMessageService.sendThreadMessage(1,2,'Test 16', 'Subject 5')
+        def message4 = threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 16', 'Subject 5')
 
-        def message5 = threadMessageService.sendThreadMessage(2,1,'Test 4', 'Subject 2')
+        def message5 = threadMessageService.sendThreadMessage(2,1,'two','one','Test 4', 'Subject 2')
 
-        def message6 = threadMessageService.sendThreadMessage(1,2,'Test 7', 'Subject 3')
-        def message7 = threadMessageService.sendThreadMessage(2,1,'Test 8', 'Subject 3')
-        def message8 = threadMessageService.sendThreadMessage(2,1,'Test 9', 'Subject 3')
+        def message6 = threadMessageService.sendThreadMessage(1,2,'one', 'two','Test 7', 'Subject 3')
+        def message7 = threadMessageService.sendThreadMessage(2,1,'two','one','Test 8', 'Subject 3')
+        def message8 = threadMessageService.sendThreadMessage(2,1,'two','one','Test 9', 'Subject 3')
 
-        def message9 = threadMessageService.sendThreadMessage(3,1,'Test 10', 'Subject 1')
-        def message10 = threadMessageService.sendThreadMessage(3,1,'Test 11', 'Subject 1')
-        def message11 = threadMessageService.sendThreadMessage(1,3,'Test 12', 'Subject 1')
+        def message9 = threadMessageService.sendThreadMessage(3,1,'three','one','Test 10', 'Subject 1')
+        def message10 = threadMessageService.sendThreadMessage(3,1,'three','one','Test 11', 'Subject 1')
+        def message11 = threadMessageService.sendThreadMessage(1,3,'one','three','Test 12', 'Subject 1')
 
-        def message12 = threadMessageService.sendThreadMessage(1,3,'Test 13', 'Subject 2')
-        def message13 = threadMessageService.sendThreadMessage(1,3,'Test 14', 'Subject 2')
-        def message14 = threadMessageService.sendThreadMessage(3,1,'Test 15', 'Subject 2')
+        def message12 = threadMessageService.sendThreadMessage(1,3,'one','three','Test 13', 'Subject 2')
+        def message13 = threadMessageService.sendThreadMessage(1,3,'one','three','Test 14', 'Subject 2')
+        def message14 = threadMessageService.sendThreadMessage(3,1,'three','one','Test 15', 'Subject 2')
 
         assert threadMessageService.getThreads(1, true).size() == 5
         assert threadMessageService.getThreads(2, true).size() == 3

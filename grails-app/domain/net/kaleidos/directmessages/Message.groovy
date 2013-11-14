@@ -32,6 +32,16 @@ class Message {
     Boolean readed = false
 
     /**
+     * Date when the message was created
+     */
+    Date dateCreated
+
+
+    ///////////////////////////////////////////
+    // Fields for threaded messages
+    ///////////////////////////////////////////
+
+    /**
      * Subject of the message. Optional, only for "mail" type messages
      */
     String subject
@@ -63,18 +73,36 @@ class Message {
     Boolean toDeletedOnThread = false
 
     /**
-     * Date when the message was created
+     * Name of the user that generates the message, for sorting
      */
-    Date dateCreated
+     String fromName = ''
+
+     /**
+     * Name of the user that receives the message, for sorting
+     */
+     String toName = ''
+
+
 
     static constraints = {
         subject nullable: true, blank: true
+        reply nullable: true
+        lastOnThread nullable: true
+        numberOfMessagesOnThread nullable: true
+        fromDeletedOnThread nullable: true
+        toDeletedOnThread nullable: true
+        fromName nullable: true, blank: true
+        toName nullable: true, blank: true
     }
 
     static mapping = {
         table "directmessages_message"
         text type:"text"
         subject type:"text", index: 'directmessages_message_subject_idx'
+    }
+
+    boolean isDeletedForUser(long idUser){
+        return ((this.fromId == idUser && this.fromDeletedOnThread) || (this.toId == idUser && this.toDeletedOnThread))
     }
 
 
