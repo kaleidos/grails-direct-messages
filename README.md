@@ -34,6 +34,14 @@ All the functionality of the plugin should be accessed by one of the services:
 
 * ThreadMessageService
 
+### Installation
+
+Simply add this line on the plugins section of BuildConfig.groovy
+
+```groovy
+compile ":grails-direct-messages:1.0"
+```
+
 ### Usage
 
 #### Direct Messages
@@ -301,4 +309,14 @@ from Alice's point of view. From Bob's point of view the thread isn't deleted.
 </pre>
 ```groovy
 void deleteMessagesOnThread(long userId, Message message)
+```
+
+### Notes
+
+#### Note for MySQL users
+
+There is an incompability between hibernate and mysql indexes over blob fields. So the index directmessages_message_subject_idx is not created automatically. You should create it on your application Bootstrap, or manually with something like:
+
+```sql
+create index directmessages_message_subject_idx on directmessages_message(subject(255))
 ```
